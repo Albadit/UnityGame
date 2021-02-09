@@ -28,7 +28,6 @@ public class SettingsMenu : MonoBehaviour
 	public GameObject lineDifficultyNormal;
 	public GameObject lineDifficultyHardcore;
 	public GameObject musicSlider;
-	public AudioSource music;
 	public GameObject showHudText;
 	public GameObject tooltipsText;
 
@@ -225,7 +224,7 @@ public class SettingsMenu : MonoBehaviour
 			DifficultyHardcore();
 	}
 
-	public void MusicSlider() => GetComponent<AudioSource>().volume = sliderValue;
+	public void MusicSlider() => Camera.main.GetComponent<AudioSource>().volume = sliderValue;
 
 	public void UpdateShowHud() => showHudText.GetComponent<TMP_Text>().text = showHud == 0 ? "Off" : "On";
 
