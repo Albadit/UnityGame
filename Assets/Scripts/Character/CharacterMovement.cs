@@ -75,13 +75,9 @@ public class CharacterMovement : MonoBehaviour
         public float gravityMultiplier = 1.0f;
         public PhysicMaterial zeroFrictionMaterial;
         public PhysicMaterial highFrictionMaterial;
-        public float maxSlopeAngle = 55;
         internal bool isTouchingWalkable;
         internal bool isTouchingUpright;
         internal bool isTouchingFlat;
-        public float maxWallShear = 89;
-        public float maxStepHeight = 0.2f;
-        internal bool stairMiniHop = false;
         public RaycastHit surfaceAngleCheck;
         public Vector3 curntGroundNormal;
         public Vector2 moveDirRef;
@@ -211,41 +207,7 @@ public class CharacterMovement : MonoBehaviour
         Vector3 MoveDirection = Vector3.zero;
         speed = walkByDefault ? isCrouching ? walkSpeedInternal : (isSprinting ? sprintSpeedInternal : walkSpeedInternal) : (isSprinting ? walkSpeedInternal : sprintSpeedInternal);
 
-        if (advanced.maxSlopeAngle > 0)
-        {
-            if (advanced.isTouchingUpright && advanced.isTouchingWalkable)
-            {
-
-                MoveDirection = (transform.forward * inputXY.y * speed + transform.right * inputXY.x * walkSpeedInternal);
-                if (!didJump) { fps_Rigidbody.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotation; }
-            }
-            else if (advanced.isTouchingUpright && !advanced.isTouchingWalkable)
-            {
-                fps_Rigidbody.constraints = RigidbodyConstraints.None | RigidbodyConstraints.FreezeRotation;
-            }
-
-            else
-            {
-                fps_Rigidbody.constraints = RigidbodyConstraints.None | RigidbodyConstraints.FreezeRotation;
-                MoveDirection = ((transform.forward * inputXY.y * speed + transform.right * inputXY.x * walkSpeedInternal) * (fps_Rigidbody.velocity.y > 0.01f ? SlopeCheck() : 0.8f));
-            }
-        }
-        else
-        {
-            MoveDirection = (transform.forward * inputXY.y * speed + transform.right * inputXY.x * walkSpeedInternal);
-        }
-
-        RaycastHit WT;
-        if (advanced.maxStepHeight > 0 && Physics.Raycast(transform.position - new Vector3(0, ((capsule.height / 2) * transform.localScale.y) - 0.01f, 0), MoveDirection, out WT, capsule.radius + 0.15f, Physics.AllLayers, QueryTriggerInteraction.Ignore) && Vector3.Angle(WT.normal, Vector3.up) > 88)
-        {
-            RaycastHit ST;
-            if (!Physics.Raycast(transform.position - new Vector3(0, ((capsule.height / 2) * transform.localScale.y) - (advanced.maxStepHeight), 0), MoveDirection, out ST, capsule.radius + 0.25f, Physics.AllLayers, QueryTriggerInteraction.Ignore))
-            {
-                advanced.stairMiniHop = true;
-                transform.position += new Vector3(0, advanced.maxStepHeight * 1.2f, 0);
-            }
-        }
-        Debug.DrawRay(transform.position, MoveDirection, Color.red, 0, false);
+        MoveDirection = (transform.forward * inputXY.y * speed + transform.right * inputXY.x * walkSpeedInternal);
 
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
@@ -257,43 +219,10 @@ public class CharacterMovement : MonoBehaviour
 
         if (IsGrounded && jumpInput && jumpPowerInternal > 0 && !didJump)
         {
-            if (advanced.maxSlopeAngle > 0)
-            {
-                if (advanced.isTouchingFlat || advanced.isTouchingWalkable)
-                {
-                    didJump = true;
-                    jumpInput = false;
-                    yVelocity += fps_Rigidbody.velocity.y < 0.01f ? jumpPowerInternal : jumpPowerInternal / 3;
-                    advanced.isTouchingWalkable = false;
-                    advanced.isTouchingFlat = false;
-                    advanced.isTouchingUpright = false;
-                    fps_Rigidbody.constraints = RigidbodyConstraints.None | RigidbodyConstraints.FreezeRotation;
-                }
-
-            }
-            else
-            {
-                didJump = true;
-                jumpInput = false;
-                yVelocity += jumpPowerInternal;
-            }
-
-        }
-
-        if (advanced.maxSlopeAngle > 0)
-        {
-
-
-            if (!didJump && advanced.lastKnownSlopeAngle > 5 && advanced.isTouchingWalkable)
-            {
-                yVelocity *= SlopeCheck() / 4;
-            }
-            if (advanced.isTouchingUpright && !advanced.isTouchingWalkable && !didJump)
-            {
-                yVelocity += Physics.gravity.y;
-            }
-        }
-
+            didJump = true;
+            jumpInput = false;
+            yVelocity += jumpPowerInternal;
+        }       
 
         if (!controllerPauseState)
         {
@@ -345,14 +274,6 @@ public class CharacterMovement : MonoBehaviour
         }
 
         IsGrounded = false;
-
-        if (advanced.maxSlopeAngle > 0)
-        {
-            if (advanced.isTouchingFlat || advanced.isTouchingWalkable || advanced.isTouchingUpright) { didJump = false; }
-            advanced.isTouchingWalkable = false;
-            advanced.isTouchingUpright = false;
-            advanced.isTouchingFlat = false;
-        }
     }
 
     public IEnumerator CameraShake(float Duration, float Magnitude)
@@ -385,15 +306,6 @@ public class CharacterMovement : MonoBehaviour
         }
     }
 
-    float SlopeCheck()
-    {
-
-        advanced.lastKnownSlopeAngle = Mathf.MoveTowards(advanced.lastKnownSlopeAngle, Vector3.Angle(advanced.curntGroundNormal, Vector3.up), 5f);
-
-        return new AnimationCurve(new Keyframe(-90.0f, 1.0f), new Keyframe(0.0f, 1.0f), new Keyframe(advanced.maxSlopeAngle + 15, 0f), new Keyframe(advanced.maxWallShear, 0.0f), new Keyframe(advanced.maxWallShear + 0.1f, 1.0f), new Keyframe(90, 1.0f)) { preWrapMode = WrapMode.Clamp, postWrapMode = WrapMode.ClampForever }.Evaluate(advanced.lastKnownSlopeAngle);
-
-    }
-
     private void OnCollisionEnter(Collision CollisionData)
     {
         for (int i = 0; i < CollisionData.contactCount; i++)
@@ -401,23 +313,11 @@ public class CharacterMovement : MonoBehaviour
             float a = Vector3.Angle(CollisionData.GetContact(i).normal, Vector3.up);
             if (CollisionData.GetContact(i).point.y < transform.position.y - ((capsule.height / 2) - capsule.radius * 0.95f))
             {
-
                 if (!IsGrounded)
                 {
                     IsGrounded = true;
-                    advanced.stairMiniHop = false;
                     if (didJump && a <= 70) { didJump = false; }
                 }
-
-                if (advanced.maxSlopeAngle > 0)
-                {
-                    if (a < 5.1f) { advanced.isTouchingFlat = true; advanced.isTouchingWalkable = true; }
-                    else if (a < advanced.maxSlopeAngle + 0.1f) { advanced.isTouchingWalkable = true; /* IsGrounded = true; */}
-                    else if (a < 90) { advanced.isTouchingUpright = true; }
-
-                    advanced.curntGroundNormal = CollisionData.GetContact(i).normal;
-                }
-
             }
         }
     }
@@ -434,16 +334,6 @@ public class CharacterMovement : MonoBehaviour
                 if (!IsGrounded)
                 {
                     IsGrounded = true;
-                    advanced.stairMiniHop = false;
-                }
-
-                if (advanced.maxSlopeAngle > 0)
-                {
-                    if (a < 5.1f) { advanced.isTouchingFlat = true; advanced.isTouchingWalkable = true; }
-                    else if (a < advanced.maxSlopeAngle + 0.1f) { advanced.isTouchingWalkable = true; /* IsGrounded = true; */}
-                    else if (a < 90) { advanced.isTouchingUpright = true; }
-
-                    advanced.curntGroundNormal = CollisionData.GetContact(i).normal;
                 }
 
             }
@@ -453,8 +343,6 @@ public class CharacterMovement : MonoBehaviour
     private void OnCollisionExit(Collision CollisionData)
     {
         IsGrounded = false;
-        if (advanced.maxSlopeAngle > 0) { advanced.curntGroundNormal = Vector3.up; advanced.lastKnownSlopeAngle = 0; advanced.isTouchingWalkable = false; advanced.isTouchingUpright = false; }
-
     }
 
 
