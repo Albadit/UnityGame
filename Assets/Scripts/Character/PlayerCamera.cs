@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [AddComponentMenu("Camera-Control/Smooth Mouse Look")]
-public class MouseLook : MonoBehaviour
+public class PlayerCamera : MonoBehaviour
 {
     public enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
     public RotationAxes axes = RotationAxes.MouseXAndY;
@@ -22,11 +22,15 @@ public class MouseLook : MonoBehaviour
     public float frameCounter = 20;
     Quaternion originalRotation;
 
+    public Transform player;
+    public Vector3 offset;
+
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
 
         Rigidbody rb = GetComponent<Rigidbody>();
+
         if (rb)
             rb.freezeRotation = true;
         originalRotation = transform.localRotation;
@@ -34,6 +38,8 @@ public class MouseLook : MonoBehaviour
 
     void Update()
     {
+        transform.position = player.position + offset;
+        transform.LookAt(player.position);
         Look();
     }
 
