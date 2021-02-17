@@ -21,8 +21,8 @@ public class PlayerCamera : MonoBehaviour
     float rotAverageY = 0f;
     public float frameCounter = 20;
     Quaternion originalRotation;
-    public Camera cam;
 
+    public Transform player;
     public Vector3 offset;
 
     void Start()
@@ -38,6 +38,8 @@ public class PlayerCamera : MonoBehaviour
 
     void Update()
     {
+        transform.position = player.position + offset;
+        transform.LookAt(player.position);
         Look();
     }
 
@@ -81,8 +83,8 @@ public class PlayerCamera : MonoBehaviour
             Quaternion yQuaternion = Quaternion.AngleAxis(rotAverageY, Vector3.left);
             Quaternion xQuaternion = Quaternion.AngleAxis(rotAverageX, Vector3.up);
 
-            cam.transform.localRotation = originalRotation * xQuaternion * yQuaternion;
-            transform.localRotation = originalRotation * xQuaternion;
+            //Rotate
+            transform.localRotation = originalRotation * xQuaternion * yQuaternion;
         }
         else if (axes == RotationAxes.MouseX)
         {
