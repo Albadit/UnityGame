@@ -8,11 +8,14 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement")]
     public float walkSpeed = 4f;
     public float runSpeed = 8f;
+    private bool isRunning;
     public float jumpPower = 5f;
+    private float speed;
+    private Vector3 InputXYZ;
     public CrouchModifiers crouchSettings = new CrouchModifiers();
 
-    public float currentSpeed { get; private set; }
-    public bool IsGrounded { get; private set; }
+    public float currentSpeed = 0;
+    public bool IsGrounded = true;
 
     [Header("Input")]
     public InputSettings inputSettings = new InputSettings();
@@ -24,34 +27,50 @@ public class PlayerMovement : MonoBehaviour
     public Camera cam;
     public float fovChange;
 
+    private Rigidbody rigid;
+    private CapsuleCollider capsuleCollider;
+
     void Start()
     {
-        
+        rigid = GetComponent<Rigidbody>();
+        capsuleCollider = GetComponent<CapsuleCollider>();
     }
 
     void Update()
     {
-       
+
     }
 
     void FixedUpdate()
     {
-        
-    }
+        float inputForward = Input.GetAxis("Vertical");
+        float inputSideway = Input.GetAxis("Horizontal");
 
-    private void OnCollisionStay(Collision CollisionData)
-    {
-        if (!IsGrounded)
+        speed = walkSpeed;
+        InputXYZ = Vector3.zero;
+        Vector3 forward = inputForward * transform.forward;
+        Vector3 sideway = inputSideway * transform.right;
+
+        Vector3 combinedInput = (forward + sideway).normalized;
+        InputXYZ = new Vector3(combinedInput.x, 0f, combinedInput.z);
+
+        float inputMagnitude = Mathf.Abs(inputForward) +
+            Mathf.Abs(inputSideway);
+        currentSpeed = Mathf.Clamp01(inputMagnitude);
+    
+
+        if(Input.GetKey(inputSettings.sprintKey))
         {
-            IsGrounded = true;
+            speed = runSpeed;
+            isRunning = true;
+        }
+        else 
+        {
+            speed = walkSpeed;
+            isRunning = false;
         }
     }
-
-    private void OnCollisionExit(Collision CollisionData)
-    {
-        IsGrounded = false;
-    }
-
+    
     [System.Serializable]
     public class InputSettings
     {
