@@ -3004,16 +3004,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 444b298bfa38b4948aaae41e10986c02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  axes: 0
-  sensitivityY: 1
-  sensitivityX: 1
-  minimumY: -360
-  maximumY: 360
-  minimumX: -70
-  maximumX: 90
-  frameCounter: 20
+  mouseInputInversion: 0
+  mouseSensitivity: 1
+  cameraSmoothing: 1
+  verticalRotationRange: 150
   cam: {fileID: 1262878757}
-  offset: {x: 0, y: 0.5, z: 0}
 --- !u!43 &1897030190
 Mesh:
   m_ObjectHideFlags: 0

@@ -12,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
     public CrouchModifiers crouchSettings = new CrouchModifiers();
 
     public float currentSpeed { get; private set; }
+    public bool IsGrounded { get; private set; }
 
     [Header("Input")]
     public InputSettings inputSettings = new InputSettings();
@@ -22,8 +23,6 @@ public class PlayerMovement : MonoBehaviour
     [Header("Camera Settings")]
     public Camera cam;
     public float fovChange;
-
-
 
     void Start()
     {
@@ -38,6 +37,19 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         
+    }
+
+    private void OnCollisionStay(Collision CollisionData)
+    {
+        if (!IsGrounded)
+        {
+            IsGrounded = true;
+        }
+    }
+
+    private void OnCollisionExit(Collision CollisionData)
+    {
+        IsGrounded = false;
     }
 
     [System.Serializable]
