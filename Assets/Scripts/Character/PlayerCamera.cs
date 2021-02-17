@@ -4,18 +4,19 @@ using UnityEngine;
 
 public class PlayerCamera : MonoBehaviour
 {
-    public enum InvertMouseInput { None, X, Y, Both }
+    public enum InvertMouseInput { Normal, InvertX, InvertY, InvertBoth }
 
     [Header("Input Type")]
-    public InvertMouseInput mouseInputInversion = InvertMouseInput.None;
+    public InvertMouseInput mouseInputInversion = InvertMouseInput.Normal;
 
     [Header("Mouse Movement")]
     [Range(0.1f, 10)]
     public float mouseSensitivity = 1;
     public float cameraSmoothing = 1;
-    public float verticalRotationRange = 150;
+    public float verticalRangeUp = 150;
+    public float verticalRangeDown = 150;
 
-    private float fOVToMouseSensitivity = 1;
+    private float FOVToMouseSensitivity = 1;
 
     private float baseCamFOV;
     private Vector3 targetAngles;
@@ -38,17 +39,17 @@ public class PlayerCamera : MonoBehaviour
         float mouseXInput = 0;
         float camFOV = cam.fieldOfView;
 
-        mouseYInput = mouseInputInversion == InvertMouseInput.None || mouseInputInversion == InvertMouseInput.X ? Input.GetAxis("Mouse Y") : -Input.GetAxis("Mouse Y");
-        mouseXInput = mouseInputInversion == InvertMouseInput.None || mouseInputInversion == InvertMouseInput.Y ? Input.GetAxis("Mouse X") : -Input.GetAxis("Mouse X");
+        mouseYInput = mouseInputInversion == InvertMouseInput.Normal || mouseInputInversion == InvertMouseInput.InvertX ? Input.GetAxis("Mouse Y") : -Input.GetAxis("Mouse Y");
+        mouseXInput = mouseInputInversion == InvertMouseInput.Normal || mouseInputInversion == InvertMouseInput.InvertY ? Input.GetAxis("Mouse X") : -Input.GetAxis("Mouse X");
 
         if (targetAngles.y > 180) { targetAngles.y -= 360; followAngles.y -= 360; } else if (targetAngles.y < -180) { targetAngles.y += 360; followAngles.y += 360; }
         if (targetAngles.x > 180) { targetAngles.x -= 360; followAngles.x -= 360; } else if (targetAngles.x < -180) { targetAngles.x += 360; followAngles.x += 360; }
 
-        targetAngles.y += mouseXInput * (mouseSensitivity - ((baseCamFOV - camFOV) * fOVToMouseSensitivity) / 6f);
+        targetAngles.y += mouseXInput * (mouseSensitivity - ((baseCamFOV - camFOV) * FOVToMouseSensitivity) / 6f);
 
-        targetAngles.x += mouseYInput * (mouseSensitivity - ((baseCamFOV - camFOV) * fOVToMouseSensitivity) / 6f);
+        targetAngles.x += mouseYInput * (mouseSensitivity - ((baseCamFOV - camFOV) * FOVToMouseSensitivity) / 6f);
 
-        targetAngles.x = Mathf.Clamp(targetAngles.x, -0.5f * verticalRotationRange, 0.5f * verticalRotationRange);
+        targetAngles.x = Mathf.Clamp(targetAngles.x, -0.5f * verticalRangeDown, 0.5f * verticalRangeUp);
         followAngles = Vector3.SmoothDamp(followAngles, targetAngles, ref followVelocity, (cameraSmoothing) / 100);
 
         cam.transform.localRotation = Quaternion.Euler(-followAngles.x + originalRotation.x, 0, 0);

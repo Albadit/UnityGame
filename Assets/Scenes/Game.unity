@@ -2992,7 +2992,7 @@ MonoBehaviour:
     jumpKey: 32
     crouchKey: 306
   anim: {fileID: 0}
-  cam: {fileID: 1262878757}
+  cam: {fileID: 0}
   fovChange: 0
 --- !u!114 &1872243454
 MonoBehaviour:
@@ -3009,7 +3009,8 @@ MonoBehaviour:
   mouseInputInversion: 0
   mouseSensitivity: 1
   cameraSmoothing: 1
-  verticalRotationRange: 150
+  verticalRangeUp: 160
+  verticalRangeDown: 160
   cam: {fileID: 1262878757}
 --- !u!43 &1897030190
 Mesh:
