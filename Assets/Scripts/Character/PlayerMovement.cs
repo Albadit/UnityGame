@@ -10,7 +10,6 @@ public class PlayerMovement : MonoBehaviour
     public float runSpeed = 8f;
     public float jumpPower = 5f;
     public CrouchModifiers crouchSettings = new CrouchModifiers();
-
     public float currentSpeed { get; private set; }
 
     [Header("Input")]
@@ -22,8 +21,6 @@ public class PlayerMovement : MonoBehaviour
     [Header("Camera Settings")]
     public Camera cam;
     public float fovChange;
-
-
 
     void Start()
     {
