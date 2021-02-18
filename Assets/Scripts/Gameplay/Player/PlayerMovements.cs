@@ -4,7 +4,7 @@ using UnityEngine;
 
 //[AddComponentMenu("Tamer/FPSC/FPSC Movement")]
 [RequireComponent(typeof(CharacterController))]
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovements : MonoBehaviour
 {
     [Header("Movement")]
     public CharacterController controller;
