@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
-    [Header("Movement")]
+   /* [Header("Movement")]
     public float walkSpeed = 4f;
     public float runSpeed = 8f;
     private bool isRunning;
@@ -86,5 +86,5 @@ public class PlayerMovement : MonoBehaviour
         public bool toggleCrouch = false;
         public float crouchWalkSpeedMultiplier = 0.5f;
         public float crouchJumpPowerMultiplier = 0f;
-    }
+    }*/
 }
