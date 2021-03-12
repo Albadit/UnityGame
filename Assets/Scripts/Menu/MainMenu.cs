@@ -8,7 +8,7 @@ public class MainMenu : MonoBehaviour
 {
 	[Header("Loaded Scene")]
 	[Tooltip("The name of the scene in the build settings that will load")]
-	public string sceneName = "";
+	public int newGame;
 
 	[Header("Panels")]
 	public GameObject[] menus;
@@ -27,7 +27,7 @@ public class MainMenu : MonoBehaviour
 	public Slider loadBar;
 	public TMP_Text finishedLoadingText;
 
-	public void Start()
+    public void Start()
 	{
 		DisableMenus();
 	}
@@ -48,12 +48,8 @@ public class MainMenu : MonoBehaviour
 		menus[menuIndex].SetActive(true);
 	}
 
-	public void NewGame()
-	{
-		if (sceneName != "")
-			StartCoroutine(LoadAsynchronously(sceneName));
-	}
-
+	public void NewGame() => StartCoroutine(LoadAsynchronously(newGame));
+		
 	public void Support() => Application.OpenURL("http://unity3d.com/");
 
 	public void Settings()
@@ -70,9 +66,9 @@ public class MainMenu : MonoBehaviour
 	#endif
 	}
 
-	IEnumerator LoadAsynchronously(string sceneName) // scene name is just the name of the current scene being loaded
+	IEnumerator LoadAsynchronously(int newGame)
 	{
-		AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
+		AsyncOperation operation = SceneManager.LoadSceneAsync(newGame);
 		operation.allowSceneActivation = false;
 		mainCanvas.SetActive(false);
 		loadingMenu.SetActive(true);
@@ -83,16 +79,18 @@ public class MainMenu : MonoBehaviour
 			loadBar.value = progress;
 
 			if (operation.progress >= 0.9f)
-			{
+            {
+				Debug.Log("isloading" + progress);
 				finishedLoadingText.gameObject.SetActive(true);
 
-				if (Input.anyKeyDown)
-				{
+				// Input does not work
+                if (Input.anyKeyDown)
+                {
+					Debug.Log("isloadingaaaa" + progress);
 					operation.allowSceneActivation = true;
-				}
-			}
-
-			yield return null;
+                }
+            }
+            yield return null;
 		}
 	}
 }
